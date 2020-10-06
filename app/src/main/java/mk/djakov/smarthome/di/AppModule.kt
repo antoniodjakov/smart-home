@@ -23,8 +23,9 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMainRepository(
-        smartHomeService: SmartHomeService
-    ) = MainRepository(smartHomeService)
+        @DeviceOne deviceOneService: SmartHomeService,
+        @DeviceTwo deviceTwoService: SmartHomeService
+    ) = MainRepository(deviceOneService, deviceTwoService)
 
     @Singleton
     @Provides
@@ -49,30 +50,54 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMoshiConverterFactory(moshi: Moshi): MoshiConverterFactory = MoshiConverterFactory.create(moshi)
+    fun provideMoshiConverterFactory(moshi: Moshi): MoshiConverterFactory =
+        MoshiConverterFactory.create(moshi)
 
     @Singleton
     @Provides
-    fun providesSmartHomeService(
+    @DeviceOne
+    fun providesDeviceOneSmartHomeService(
         okHttpClient: OkHttpClient,
         converterFactory: MoshiConverterFactory
     ): SmartHomeService =
-        provideService(okHttpClient, converterFactory, SmartHomeService::class.java)
+        provideService(
+            okHttpClient,
+            converterFactory,
+            Const.BASE_URL_1,
+            SmartHomeService::class.java
+        )
+
+    @Singleton
+    @Provides
+    @DeviceTwo
+    fun providesDeviceTwoSmartHomeService(
+        okHttpClient: OkHttpClient,
+        converterFactory: MoshiConverterFactory
+    ): SmartHomeService =
+        provideService(
+            okHttpClient,
+            converterFactory,
+            Const.BASE_URL_2,
+            SmartHomeService::class.java
+        )
+
 
     private fun <T> provideService(
         okHttpClient: OkHttpClient,
         converterFactory: MoshiConverterFactory,
+        baseUrl: String,
         clazz: Class<T>
     ): T {
-        return createRetrofit(okHttpClient, converterFactory).create(clazz)
+        return createRetrofit(okHttpClient, converterFactory, baseUrl).create(clazz)
     }
 
     private fun createRetrofit(
         okHttpClient: OkHttpClient,
-        converterFactory: MoshiConverterFactory
+        converterFactory: MoshiConverterFactory,
+        baseUrl: String
     ): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(Const.BASE_URL)
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(converterFactory)
             .build()
