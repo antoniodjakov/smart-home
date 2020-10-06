@@ -32,14 +32,20 @@ class HomeViewModel @ViewModelInject constructor(
         get() = _deviceTwoStatus
 
     init {
+        setLoadingDeviceOne(true)
+        setLoadingDeviceTwo(true)
         viewModelScope.launch {
-            _deviceOneStatus.postValue(repository.checkState(Const.DEVICE_ONE).also {
-                setLoadingDeviceOne(true)
-            })
+            when (val deviceOneState = repository.checkState(Const.DEVICE_ONE)) {
+                is Response.Success -> _deviceOneValue.postValue(deviceOneState)
+                    .also { acknowledgeDeviceOneStatus() }
+                is Response.Error -> _deviceOneStatus.postValue(deviceOneState)
+            }
 
-            _deviceTwoStatus.postValue(repository.checkState(Const.DEVICE_TWO).also {
-                setLoadingDeviceTwo(true)
-            })
+            when (val deviceTwoState = repository.checkState(Const.DEVICE_TWO)) {
+                is Response.Success -> _deviceTwoValue.postValue(deviceTwoState)
+                    .also { acknowledgeDeviceTwoStatus() }
+                is Response.Error -> _deviceTwoStatus.postValue(deviceTwoState)
+            }
         }
     }
 
@@ -65,5 +71,13 @@ class HomeViewModel @ViewModelInject constructor(
 
     fun setLoadingDeviceTwo(value: Boolean) {
         _isLoadingDeviceTwo.value = value
+    }
+
+    fun acknowledgeDeviceOneStatus() {
+        _deviceOneStatus.value = Response.None()
+    }
+
+    fun acknowledgeDeviceTwoStatus() {
+        _deviceTwoStatus.value = Response.None()
     }
 }

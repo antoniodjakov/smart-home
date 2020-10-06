@@ -10,8 +10,8 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="status_change_success">Успешно променет статус</string>
     <string name="status_change_error">Грешка при промена на статус</string>
+    <string name="status_check_error">Грешка при проверка на статус</string>
     <string name="kitchen_light">Kitchen light</string>
     <string name="bathroom_light">Bathroom light</string>
 </resources>

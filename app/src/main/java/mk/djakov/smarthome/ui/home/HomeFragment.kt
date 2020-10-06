@@ -17,45 +17,38 @@ import mk.djakov.smarthome.util.Response
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var viewModel: HomeViewModel
     private var binding: FragmentHomeBinding? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         binding = DataBindingUtil.bind(view)
 
         binding?.deviceOneStatus?.setOnClickListener { _ ->
             val checked = binding?.deviceOneStatus?.drawable?.constantState ==
                     ContextCompat.getDrawable(requireContext(), R.drawable.light_on)?.constantState
-            homeViewModel.updateValue(Const.DEVICE_ONE, !checked)
-            homeViewModel.setLoadingDeviceOne(true)
+            viewModel.updateValue(Const.DEVICE_ONE, !checked)
+            viewModel.setLoadingDeviceOne(true)
         }
 
         binding?.deviceTwoStatus?.setOnClickListener { _ ->
             val checked = binding?.deviceTwoStatus?.drawable?.constantState ==
                     ContextCompat.getDrawable(requireContext(), R.drawable.light_on)?.constantState
-            homeViewModel.updateValue(Const.DEVICE_TWO, !checked)
-            homeViewModel.setLoadingDeviceTwo(true)
+            viewModel.updateValue(Const.DEVICE_TWO, !checked)
+            viewModel.setLoadingDeviceTwo(true)
         }
 
         subscribeObservers()
     }
 
     private fun subscribeObservers() {
-        homeViewModel.deviceOneValue.observe(viewLifecycleOwner, { response ->
-            homeViewModel.setLoadingDeviceOne(false)
+        viewModel.deviceOneValue.observe(viewLifecycleOwner, { response ->
+            viewModel.setLoadingDeviceOne(false)
             when (response) {
-                is Response.Success -> {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.status_change_success),
-                        Toast.LENGTH_SHORT
-                    ).show().also {
-                        setDeviceState(binding?.deviceOneStatus, response.data?.state == 1)
-                    }
-                }
+                is Response.Success ->
+                    setDeviceState(binding?.deviceOneStatus, response.data?.state == 1)
 
                 is Response.Error -> {
                     Toast.makeText(
@@ -64,21 +57,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
+                else -> {
+                }
             }
         })
 
-        homeViewModel.deviceTwoValue.observe(viewLifecycleOwner, { response ->
-            homeViewModel.setLoadingDeviceTwo(false)
+        viewModel.deviceTwoValue.observe(viewLifecycleOwner, { response ->
+            viewModel.setLoadingDeviceTwo(false)
             when (response) {
-                is Response.Success -> {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.status_change_success),
-                        Toast.LENGTH_SHORT
-                    ).show().also {
-                        setDeviceState(binding?.deviceTwoStatus, response.data?.state == 1)
-                    }
-                }
+                is Response.Success ->
+                    setDeviceState(binding?.deviceTwoStatus, response.data?.state == 1)
 
                 is Response.Error -> {
                     Toast.makeText(
@@ -87,49 +76,58 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
+                else -> {
+                }
             }
         })
 
-        homeViewModel.deviceOneStatus.observe(viewLifecycleOwner, {
-            homeViewModel.setLoadingDeviceOne(false)
+        viewModel.deviceOneStatus.observe(viewLifecycleOwner, {
+            viewModel.setLoadingDeviceOne(false)
             when (it) {
-                is Response.Success -> {
-                    setDeviceState(binding?.deviceOneStatus, it.data?.state == 1)
-                }
-
                 is Response.Error -> {
                     Toast.makeText(
                         requireContext(),
-                        R.string.status_change_error,
+                        R.string.status_check_error,
                         Toast.LENGTH_SHORT
-                    ).show().also { setDeviceState(binding?.deviceOneStatus, false) }
+                    ).show().also {
+                        setDeviceState(binding?.deviceOneStatus, false).also {
+                            viewModel.acknowledgeDeviceOneStatus()
+                        }
+                    }
+                }
+
+                else -> {
                 }
             }
         })
 
-        homeViewModel.deviceTwoStatus.observe(viewLifecycleOwner, {
-            homeViewModel.setLoadingDeviceTwo(false)
+        viewModel.deviceTwoStatus.observe(viewLifecycleOwner, {
+            viewModel.setLoadingDeviceTwo(false)
             when (it) {
-                is Response.Success -> {
-                    setDeviceState(binding?.deviceTwoStatus, it.data?.state == 1)
-                }
-
                 is Response.Error -> {
                     Toast.makeText(
                         requireContext(),
-                        R.string.status_change_error,
+                        R.string.status_check_error,
                         Toast.LENGTH_SHORT
-                    ).show().also { setDeviceState(binding?.deviceTwoStatus, false) }
+                    ).show().also {
+                        setDeviceState(binding?.deviceTwoStatus, false).also {
+                            viewModel.acknowledgeDeviceTwoStatus()
+                        }
+                    }
+                }
+
+                else -> {
                 }
             }
         })
 
-        homeViewModel.loadingStatusDeviceOne.observe(viewLifecycleOwner, {
+        viewModel.loadingStatusDeviceOne.observe(viewLifecycleOwner, {
             binding?.deviceOneStatus?.visibility = if (it) View.INVISIBLE else View.VISIBLE
             binding?.deviceOneProgressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
         })
 
-        homeViewModel.loadingStatusDeviceTwo.observe(viewLifecycleOwner, {
+        viewModel.loadingStatusDeviceTwo.observe(viewLifecycleOwner, {
             binding?.deviceTwoStatus?.visibility = if (it) View.INVISIBLE else View.VISIBLE
             binding?.deviceTwoProgressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
         })
