@@ -32,21 +32,8 @@ class HomeViewModel @ViewModelInject constructor(
         get() = _deviceTwoStatus
 
     init {
-        setLoadingDeviceOne(true)
-        setLoadingDeviceTwo(true)
-        viewModelScope.launch {
-            when (val deviceOneState = repository.checkState(Const.DEVICE_ONE)) {
-                is Response.Success -> _deviceOneValue.postValue(deviceOneState)
-                    .also { acknowledgeDeviceOneStatus() }
-                is Response.Error -> _deviceOneStatus.postValue(deviceOneState)
-            }
-
-            when (val deviceTwoState = repository.checkState(Const.DEVICE_TWO)) {
-                is Response.Success -> _deviceTwoValue.postValue(deviceTwoState)
-                    .also { acknowledgeDeviceTwoStatus() }
-                is Response.Error -> _deviceTwoStatus.postValue(deviceTwoState)
-            }
-        }
+        checkDeviceOneStatus()
+        checkDeviceTwoStatus()
     }
 
     private val _deviceOneValue = MutableLiveData<Response<RelayResponse>>()
@@ -62,6 +49,28 @@ class HomeViewModel @ViewModelInject constructor(
             _deviceOneValue.postValue(repository.updateValue(device, value))
         } else {
             _deviceTwoValue.postValue(repository.updateValue(device, value))
+        }
+    }
+
+    fun checkDeviceOneStatus() {
+        setLoadingDeviceOne(true)
+        viewModelScope.launch {
+            when (val deviceOneState = repository.checkState(Const.DEVICE_ONE)) {
+                is Response.Success -> _deviceOneValue.postValue(deviceOneState)
+                    .also { acknowledgeDeviceOneStatus() }
+                is Response.Error -> _deviceOneStatus.postValue(deviceOneState)
+            }
+        }
+    }
+
+    fun checkDeviceTwoStatus() {
+        setLoadingDeviceTwo(true)
+        viewModelScope.launch {
+            when (val deviceTwoState = repository.checkState(Const.DEVICE_TWO)) {
+                is Response.Success -> _deviceTwoValue.postValue(deviceTwoState)
+                    .also { acknowledgeDeviceTwoStatus() }
+                is Response.Error -> _deviceTwoStatus.postValue(deviceTwoState)
+            }
         }
     }
 

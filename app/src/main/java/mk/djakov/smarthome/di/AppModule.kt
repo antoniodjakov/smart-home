@@ -9,7 +9,7 @@ import dagger.hilt.android.components.ApplicationComponent
 import me.dm7.barcodescanner.core.BuildConfig
 import mk.djakov.smarthome.data.repository.MainRepository
 import mk.djakov.smarthome.networking.SmartHomeService
-import mk.djakov.smarthome.util.Const
+import mk.djakov.smarthome.util.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -63,7 +63,7 @@ object AppModule {
         provideService(
             okHttpClient,
             converterFactory,
-            Const.BASE_URL_1,
+            Credentials.BASE_URL_1,
             SmartHomeService::class.java
         )
 
@@ -77,7 +77,7 @@ object AppModule {
         provideService(
             okHttpClient,
             converterFactory,
-            Const.BASE_URL_2,
+            Credentials.BASE_URL_2,
             SmartHomeService::class.java
         )
 

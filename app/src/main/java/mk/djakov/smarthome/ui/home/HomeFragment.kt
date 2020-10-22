@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import mk.djakov.smarthome.R
 import mk.djakov.smarthome.databinding.FragmentHomeBinding
@@ -38,6 +39,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     ContextCompat.getDrawable(requireContext(), R.drawable.light_on)?.constantState
             viewModel.updateValue(Const.DEVICE_TWO, !checked)
             viewModel.setLoadingDeviceTwo(true)
+        }
+
+        activity?.findViewById<FloatingActionButton>(R.id.fab)?.setOnClickListener {
+            checkStatus()
         }
 
         subscribeObservers()
@@ -135,5 +140,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setDeviceState(imageView: ImageView?, checked: Boolean) {
         imageView?.setImageResource(if (checked) R.drawable.light_on else R.drawable.light_off)
+    }
+
+    private fun checkStatus() {
+        viewModel.checkDeviceOneStatus()
+        viewModel.checkDeviceTwoStatus()
     }
 }

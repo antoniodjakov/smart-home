@@ -28,6 +28,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:background="@null"
+        android:elevation="0dp"
+        app:backgroundTint="@android:color/transparent"
+        app:elevation="0dp"
+        app:maxImageSize="56dp"
+        app:srcCompat="@drawable/ic_info" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
