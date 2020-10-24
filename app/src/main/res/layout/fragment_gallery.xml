@@ -20,7 +20,7 @@
                 android:id="@+id/forward_button"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
-                android:background="@drawable/button_up_selector"
+                android:background="@drawable/arrow_up"
                 app:layout_constraintEnd_toStartOf="@+id/right_button"
                 app:layout_constraintStart_toEndOf="@+id/left_button"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -29,7 +29,7 @@
                 android:id="@+id/left_button"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
-                android:background="@drawable/button_left_selector"
+                android:background="@drawable/arrow_left"
                 app:layout_constraintEnd_toStartOf="@id/forward_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/forward_button" />
@@ -38,7 +38,7 @@
                 android:id="@+id/right_button"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
-                android:background="@drawable/button_right_selector"
+                android:background="@drawable/arrow_right"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/forward_button"
                 app:layout_constraintTop_toBottomOf="@id/forward_button" />

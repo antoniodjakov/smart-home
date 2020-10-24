@@ -6,64 +6,129 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorBackground"
         tools:context=".ui.home.HomeFragment">
 
-        <TextView
-            android:id="@+id/device_one_label"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_view_1"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/colorItemBackground"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_kitchen"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/device_one_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="@string/kitchen_light"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/device_one_status"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/switch_off"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/kitchen_light_menu"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible" />
+
+                <ImageButton
+                    android:id="@+id/kitchen_light_menu"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/menu"
+                    android:scaleType="centerInside"
+                    android:background="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <ProgressBar
+                    android:id="@+id/device_one_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/device_one_status"
+                    app:layout_constraintEnd_toEndOf="@id/device_one_status"
+                    app:layout_constraintStart_toStartOf="@id/device_one_status"
+                    app:layout_constraintTop_toTopOf="@id/device_one_status"
+                    tools:visibility="invisible" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_view_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="32dp"
-            android:text="@string/kitchen_light"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/colorItemBackground"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintTop_toBottomOf="@id/card_view_1">
 
-        <ImageView
-            android:id="@+id/device_one_status"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="32dp"
-            android:src="@drawable/light_off"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@id/device_one_label"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/device_one_label" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_bathroom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <ProgressBar
-            android:id="@+id/device_one_progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/device_one_status"
-            app:layout_constraintEnd_toEndOf="@id/device_one_status"
-            app:layout_constraintStart_toStartOf="@id/device_one_status"
-            app:layout_constraintTop_toTopOf="@id/device_one_status" />
+                <TextView
+                    android:id="@+id/device_two_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="@string/downstairs_heater"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/device_two_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="64dp"
-            android:text="@string/bathroom_light"
-            app:layout_constraintTop_toBottomOf="@id/device_one_label" />
+                <ImageView
+                    android:id="@+id/device_two_status"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/switch_off"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/downstairs_heater_menu"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible" />
 
-        <ImageView
-            android:id="@+id/device_two_status"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="32dp"
-            android:src="@drawable/light_off"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@id/device_two_label"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/device_two_label" />
+                <ImageButton
+                    android:id="@+id/downstairs_heater_menu"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/menu"
+                    android:scaleType="centerInside"
+                    android:background="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-        <ProgressBar
-            android:id="@+id/device_two_progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@id/device_two_status"
-            app:layout_constraintEnd_toEndOf="@id/device_two_status"
-            app:layout_constraintStart_toStartOf="@id/device_two_status"
-            app:layout_constraintTop_toTopOf="@id/device_two_status" />
+                <ProgressBar
+                    android:id="@+id/device_two_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/device_two_status"
+                    app:layout_constraintEnd_toEndOf="@id/device_two_status"
+                    app:layout_constraintStart_toStartOf="@id/device_two_status"
+                    app:layout_constraintTop_toTopOf="@id/device_two_status"
+                    tools:visibility="gone" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

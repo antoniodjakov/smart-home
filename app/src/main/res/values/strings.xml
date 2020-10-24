@@ -13,5 +13,5 @@
     <string name="status_change_error">Грешка при промена на статус</string>
     <string name="status_check_error">Грешка при проверка на статус</string>
     <string name="kitchen_light">Kitchen light</string>
-    <string name="bathroom_light">Bathroom light</string>
+    <string name="downstairs_heater">Downstairs heater</string>
 </resources>

@@ -33,6 +33,6 @@
         app:backgroundTint="@android:color/transparent"
         app:elevation="0dp"
         app:maxImageSize="56dp"
-        app:srcCompat="@drawable/ic_info" />
+        app:srcCompat="@drawable/information" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

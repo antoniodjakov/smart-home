@@ -29,16 +29,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         binding?.deviceOneStatus?.setOnClickListener { _ ->
             val checked = binding?.deviceOneStatus?.drawable?.constantState ==
-                    ContextCompat.getDrawable(requireContext(), R.drawable.light_on)?.constantState
+                    ContextCompat.getDrawable(requireContext(), R.drawable.switch_on)?.constantState
             viewModel.updateValue(Const.DEVICE_ONE, !checked)
             viewModel.setLoadingDeviceOne(true)
         }
 
+        binding?.kitchenLightMenu?.setOnClickListener{ _ ->
+
+        }
+
         binding?.deviceTwoStatus?.setOnClickListener { _ ->
             val checked = binding?.deviceTwoStatus?.drawable?.constantState ==
-                    ContextCompat.getDrawable(requireContext(), R.drawable.light_on)?.constantState
+                    ContextCompat.getDrawable(requireContext(), R.drawable.switch_on)?.constantState
             viewModel.updateValue(Const.DEVICE_TWO, !checked)
             viewModel.setLoadingDeviceTwo(true)
+        }
+
+        binding?.downstairsHeaterMenu?.setOnClickListener{ _ ->
+            
         }
 
         activity?.findViewById<FloatingActionButton>(R.id.fab)?.setOnClickListener {
@@ -139,7 +147,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setDeviceState(imageView: ImageView?, checked: Boolean) {
-        imageView?.setImageResource(if (checked) R.drawable.light_on else R.drawable.light_off)
+        imageView?.setImageResource(if (checked) R.drawable.switch_on else R.drawable.switch_off)
     }
 
     private fun checkStatus() {
