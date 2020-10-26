@@ -103,9 +103,6 @@ dependencies {
     implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02'
     kapt 'androidx.hilt:hilt-compiler:1.0.0-alpha02'
 
-    // Barcode scanner
-    implementation 'me.dm7.barcodescanner:zxing:1.9'
-
     // Easy Permissions
     implementation 'pub.devrel:easypermissions:3.0.0'
 

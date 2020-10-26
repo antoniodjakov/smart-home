@@ -4,15 +4,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import mk.djakov.smarthome.R
 import mk.djakov.smarthome.databinding.FragmentHomeBinding
-import mk.djakov.smarthome.util.Const
 import mk.djakov.smarthome.util.Response
 
 @AndroidEntryPoint
@@ -27,41 +26,32 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         binding = DataBindingUtil.bind(view)
 
-        binding?.deviceOneStatus?.setOnClickListener { _ ->
-            val checked = binding?.deviceOneStatus?.drawable?.constantState ==
-                    ContextCompat.getDrawable(requireContext(), R.drawable.switch_on)?.constantState
-            viewModel.updateValue(Const.DEVICE_ONE, !checked)
-            viewModel.setLoadingDeviceOne(true)
-        }
+        val adapter = DeviceAdapter({
+            //onStatusClick
+            viewModel.changeDeviceStatus(it)
+        }, {
+            //onOptionsClick
+        })
 
-        binding?.kitchenLightMenu?.setOnClickListener{ _ ->
-
-        }
-
-        binding?.deviceTwoStatus?.setOnClickListener { _ ->
-            val checked = binding?.deviceTwoStatus?.drawable?.constantState ==
-                    ContextCompat.getDrawable(requireContext(), R.drawable.switch_on)?.constantState
-            viewModel.updateValue(Const.DEVICE_TWO, !checked)
-            viewModel.setLoadingDeviceTwo(true)
-        }
-
-        binding?.downstairsHeaterMenu?.setOnClickListener{ _ ->
-            
-        }
+        binding?.recyclerView?.adapter = adapter
 
         activity?.findViewById<FloatingActionButton>(R.id.fab)?.setOnClickListener {
-            checkStatus()
+            viewModel.checkDevicesStatus()
         }
 
-        subscribeObservers()
+        subscribeObservers(adapter)
     }
 
-    private fun subscribeObservers() {
-        viewModel.deviceOneValue.observe(viewLifecycleOwner, { response ->
-            viewModel.setLoadingDeviceOne(false)
+    private fun subscribeObservers(adapter: DeviceAdapter) {
+
+        viewModel.devices.observe(viewLifecycleOwner, Observer {
+            adapter.submitList(it)
+        })
+
+        viewModel.deviceValue.observe(viewLifecycleOwner, Observer { response ->
             when (response) {
                 is Response.Success ->
-                    setDeviceState(binding?.deviceOneStatus, response.data?.state == 1)
+                    Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
 
                 is Response.Error -> {
                     Toast.makeText(
@@ -76,27 +66,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         })
 
-        viewModel.deviceTwoValue.observe(viewLifecycleOwner, { response ->
-            viewModel.setLoadingDeviceTwo(false)
-            when (response) {
-                is Response.Success ->
-                    setDeviceState(binding?.deviceTwoStatus, response.data?.state == 1)
-
-                is Response.Error -> {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.status_change_error),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                else -> {
-                }
-            }
-        })
-
-        viewModel.deviceOneStatus.observe(viewLifecycleOwner, {
-            viewModel.setLoadingDeviceOne(false)
+        viewModel.deviceStatus.observe(viewLifecycleOwner, Observer {
             when (it) {
                 is Response.Error -> {
                     Toast.makeText(
@@ -104,9 +74,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         R.string.status_check_error,
                         Toast.LENGTH_SHORT
                     ).show().also {
-                        setDeviceState(binding?.deviceOneStatus, false).also {
-                            viewModel.acknowledgeDeviceOneStatus()
-                        }
+                        viewModel.acknowledgeDeviceStatus()
                     }
                 }
 
@@ -114,44 +82,5 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         })
-
-        viewModel.deviceTwoStatus.observe(viewLifecycleOwner, {
-            viewModel.setLoadingDeviceTwo(false)
-            when (it) {
-                is Response.Error -> {
-                    Toast.makeText(
-                        requireContext(),
-                        R.string.status_check_error,
-                        Toast.LENGTH_SHORT
-                    ).show().also {
-                        setDeviceState(binding?.deviceTwoStatus, false).also {
-                            viewModel.acknowledgeDeviceTwoStatus()
-                        }
-                    }
-                }
-
-                else -> {
-                }
-            }
-        })
-
-        viewModel.loadingStatusDeviceOne.observe(viewLifecycleOwner, {
-            binding?.deviceOneStatus?.visibility = if (it) View.INVISIBLE else View.VISIBLE
-            binding?.deviceOneProgressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
-        })
-
-        viewModel.loadingStatusDeviceTwo.observe(viewLifecycleOwner, {
-            binding?.deviceTwoStatus?.visibility = if (it) View.INVISIBLE else View.VISIBLE
-            binding?.deviceTwoProgressBar?.visibility = if (it) View.VISIBLE else View.INVISIBLE
-        })
-    }
-
-    private fun setDeviceState(imageView: ImageView?, checked: Boolean) {
-        imageView?.setImageResource(if (checked) R.drawable.switch_on else R.drawable.switch_off)
-    }
-
-    private fun checkStatus() {
-        viewModel.checkDeviceOneStatus()
-        viewModel.checkDeviceTwoStatus()
     }
 }

@@ -1,15 +1,20 @@
 package mk.djakov.smarthome.di
 
+import android.content.Context
+import androidx.room.Room
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import me.dm7.barcodescanner.core.BuildConfig
+import dagger.hilt.android.qualifiers.ApplicationContext
+import mk.djakov.smarthome.BuildConfig
 import mk.djakov.smarthome.data.repository.MainRepository
+import mk.djakov.smarthome.db.AppDatabase
+import mk.djakov.smarthome.db.DeviceDao
 import mk.djakov.smarthome.networking.SmartHomeService
-import mk.djakov.smarthome.util.Credentials
+import mk.djakov.smarthome.util.Const
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -22,18 +27,22 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMainRepository(
-        @DeviceOne deviceOneService: SmartHomeService,
-        @DeviceTwo deviceTwoService: SmartHomeService
-    ) = MainRepository(deviceOneService, deviceTwoService)
+    fun provideSmartHomeDatabase(
+        @ApplicationContext context: Context
+    ) = Room.databaseBuilder(context, AppDatabase::class.java, "smart_home_db")
+        .fallbackToDestructiveMigration()
+        .build()
 
     @Singleton
     @Provides
-    fun provideOkHttpClient(interceptor: HttpLoggingInterceptor) =
-        OkHttpClient.Builder()
-            .addInterceptor(interceptor)
-            .addNetworkInterceptor(interceptor)
-            .build()
+    fun provideDeviceDao(db: AppDatabase) = db.deviceDao()
+
+    @Singleton
+    @Provides
+    fun provideMainRepository(
+        smartHomeService: SmartHomeService,
+        deviceDao: DeviceDao
+    ) = MainRepository(smartHomeService, deviceDao)
 
     @Singleton
     @Provides
@@ -41,6 +50,13 @@ object AppModule {
         level =
             if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     }
+
+    @Singleton
+    @Provides
+    fun provideOkHttpClient(interceptor: HttpLoggingInterceptor) =
+        OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
 
     @Singleton
     @Provides
@@ -55,32 +71,16 @@ object AppModule {
 
     @Singleton
     @Provides
-    @DeviceOne
-    fun providesDeviceOneSmartHomeService(
+    fun providesSmartHomeService(
         okHttpClient: OkHttpClient,
         converterFactory: MoshiConverterFactory
     ): SmartHomeService =
         provideService(
             okHttpClient,
             converterFactory,
-            Credentials.BASE_URL_1,
+            Const.BASE_URL,
             SmartHomeService::class.java
         )
-
-    @Singleton
-    @Provides
-    @DeviceTwo
-    fun providesDeviceTwoSmartHomeService(
-        okHttpClient: OkHttpClient,
-        converterFactory: MoshiConverterFactory
-    ): SmartHomeService =
-        provideService(
-            okHttpClient,
-            converterFactory,
-            Credentials.BASE_URL_2,
-            SmartHomeService::class.java
-        )
-
 
     private fun <T> provideService(
         okHttpClient: OkHttpClient,

@@ -6,87 +6,48 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import mk.djakov.smarthome.data.model.Device
 import mk.djakov.smarthome.data.model.RelayResponse
 import mk.djakov.smarthome.data.repository.MainRepository
-import mk.djakov.smarthome.util.Const
+import mk.djakov.smarthome.util.Data
 import mk.djakov.smarthome.util.Response
 
 class HomeViewModel @ViewModelInject constructor(
     private val repository: MainRepository
 ) : ViewModel() {
 
-    private val _isLoadingDeviceOne = MutableLiveData<Boolean>()
-    val loadingStatusDeviceOne: LiveData<Boolean>
-        get() = _isLoadingDeviceOne
+    val devices = repository.devices
 
-    private val _isLoadingDeviceTwo = MutableLiveData<Boolean>()
-    val loadingStatusDeviceTwo: LiveData<Boolean>
-        get() = _isLoadingDeviceTwo
+    private val _isLoading = MutableLiveData<Boolean>()
+    val loadingStatus: LiveData<Boolean>
+        get() = _isLoading
 
-    private val _deviceOneStatus = MutableLiveData<Response<RelayResponse>>()
-    val deviceOneStatus: LiveData<Response<RelayResponse>>
-        get() = _deviceOneStatus
+    private val _deviceStatus = MutableLiveData<Response<RelayResponse>>()
+    val deviceStatus: LiveData<Response<RelayResponse>>
+        get() = _deviceStatus
 
-    private val _deviceTwoStatus = MutableLiveData<Response<RelayResponse>>()
-    val deviceTwoStatus: LiveData<Response<RelayResponse>>
-        get() = _deviceTwoStatus
+    private val _deviceValue = MutableLiveData<Response<RelayResponse>>()
+    val deviceValue: LiveData<Response<RelayResponse>>
+        get() = _deviceValue
 
     init {
-        checkDeviceOneStatus()
-        checkDeviceTwoStatus()
-    }
-
-    private val _deviceOneValue = MutableLiveData<Response<RelayResponse>>()
-    val deviceOneValue: LiveData<Response<RelayResponse>>
-        get() = _deviceOneValue
-
-    private val _deviceTwoValue = MutableLiveData<Response<RelayResponse>>()
-    val deviceTwoValue: LiveData<Response<RelayResponse>>
-        get() = _deviceTwoValue
-
-    fun updateValue(device: String, value: Boolean) = viewModelScope.launch {
-        if (device == Const.DEVICE_ONE) {
-            _deviceOneValue.postValue(repository.updateValue(device, value))
-        } else {
-            _deviceTwoValue.postValue(repository.updateValue(device, value))
-        }
-    }
-
-    fun checkDeviceOneStatus() {
-        setLoadingDeviceOne(true)
         viewModelScope.launch {
-            when (val deviceOneState = repository.checkState(Const.DEVICE_ONE)) {
-                is Response.Success -> _deviceOneValue.postValue(deviceOneState)
-                    .also { acknowledgeDeviceOneStatus() }
-                is Response.Error -> _deviceOneStatus.postValue(deviceOneState)
-            }
+            repository.insertAll(Data.devices)
+            checkDevicesStatus()
         }
     }
 
-    fun checkDeviceTwoStatus() {
-        setLoadingDeviceTwo(true)
+    fun changeDeviceStatus(device: Device) {
         viewModelScope.launch {
-            when (val deviceTwoState = repository.checkState(Const.DEVICE_TWO)) {
-                is Response.Success -> _deviceTwoValue.postValue(deviceTwoState)
-                    .also { acknowledgeDeviceTwoStatus() }
-                is Response.Error -> _deviceTwoStatus.postValue(deviceTwoState)
-            }
+            repository.updateStatus(device, !device.state)
         }
     }
 
-    fun setLoadingDeviceOne(value: Boolean) {
-        _isLoadingDeviceOne.value = value
+    fun checkDevicesStatus() = viewModelScope.launch {
+        repository.checkAllDevicesStateAsync()
     }
 
-    fun setLoadingDeviceTwo(value: Boolean) {
-        _isLoadingDeviceTwo.value = value
-    }
-
-    fun acknowledgeDeviceOneStatus() {
-        _deviceOneStatus.value = Response.None()
-    }
-
-    fun acknowledgeDeviceTwoStatus() {
-        _deviceTwoStatus.value = Response.None()
+    fun acknowledgeDeviceStatus() {
+//        _deviceOneStatus.value = Response.None()
     }
 }
