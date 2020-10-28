@@ -22,4 +22,9 @@
         android:name="mk.djakov.smarthome.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/addDeviceFragment"
+        android:name="mk.djakov.smarthome.ui.newdevice.AddDeviceFragment"
+        android:label="AddDeviceFragment"
+        tools:layout="@layout/add_new_device_layout"/>
 </navigation>

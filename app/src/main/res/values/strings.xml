@@ -5,7 +5,6 @@
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
@@ -14,4 +13,8 @@
     <string name="status_check_error">Грешка при проверка на статус</string>
     <string name="kitchen_light">Kitchen light</string>
     <string name="downstairs_heater">Downstairs heater</string>
+    <string name="label">Name</string>
+    <string name="tag_hint">Tag</string>
+    <string name="ip_address_hint">IP Addres</string>
+    <string name="action_add">Add new device</string>
 </resources>
