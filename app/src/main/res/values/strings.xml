@@ -2,19 +2,24 @@
     <string name="app_name">SmartHome</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">Smart Home</string>
+    <string name="nav_header_subtitle">smart@home.mk</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
-    <string name="status_change_error">Грешка при промена на статус</string>
-    <string name="status_check_error">Грешка при проверка на статус</string>
-    <string name="kitchen_light">Kitchen light</string>
-    <string name="downstairs_heater">Downstairs heater</string>
+    <string name="status_change_success">Status changed successfully</string>
+    <string name="status_change_error">Error changing status</string>
+    <string name="status_check_error">Error checking status</string>
     <string name="label">Name</string>
-    <string name="tag_hint">Tag</string>
-    <string name="ip_address_hint">IP Addres</string>
+    <string name="ip_address_hint">IP Address</string>
     <string name="action_add">Add new device</string>
+    <string name="add_new_device">Add new device</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_device">Add device</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="update_device">Update device</string>
+    <string name="success">Success</string>
 </resources>

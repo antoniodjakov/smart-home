@@ -8,6 +8,7 @@ import mk.djakov.smarthome.networking.SmartHomeService
 import mk.djakov.smarthome.util.CommonRoutes
 import mk.djakov.smarthome.util.CommonRoutes.Route
 import mk.djakov.smarthome.util.Const
+import mk.djakov.smarthome.util.Helper.getRoute
 import mk.djakov.smarthome.util.Response
 import retrofit2.HttpException
 import java.io.IOException
@@ -17,40 +18,40 @@ class MainRepository @Inject constructor(
     private val smartHomeService: SmartHomeService,
     private val deviceDao: DeviceDao
 ) {
+
     val devices = deviceDao.getAllDevices()
 
-    suspend fun updateStatus(device: Device, newValue: Boolean) =
-        coroutineScope {
-            try {
-                deviceDao.setIsLoading(device.tag, true)
-                val url = if (newValue) getRoute(device, Route.DEVICE_ON)
-                else getRoute(device, Route.DEVICE_OFF)
+    suspend fun updateStatus(device: Device, newValue: Boolean) = coroutineScope {
+        try {
+            deviceDao.setIsLoading(device.id!!, true)
+            val url = if (newValue) getRoute(device, Route.DEVICE_ON)
+            else getRoute(device, Route.DEVICE_OFF)
 
-                val res = smartHomeService.genericRoute(url)
-                if (res.isSuccessful) {
-                    Response.Success(res.body()!!).also {
-                        deviceDao.updateStatus(device.tag, res.body()?.state == 1)
-                        deviceDao.setIsLoading(device.tag, false)
-                    }
-                } else {
-                    Response.Error(Const.ERROR, null).also {
-                        deviceDao.setIsLoading(device.tag, false)
-                    }
+            val res = smartHomeService.genericRoute(url)
+            if (res.isSuccessful) {
+                Response.Success(res.body()!!).also {
+                    deviceDao.updateStatus(device.id!!, res.body()?.state == 1)
+                    deviceDao.setIsLoading(device.id!!, false)
                 }
-            } catch (e: IOException) {
-                Response.Error(Const.NO_INTERNET_CONNECTION, null).also {
-                    deviceDao.setIsLoading(device.tag, false)
-                }
-            } catch (e: HttpException) {
+            } else {
                 Response.Error(Const.ERROR, null).also {
-                    deviceDao.setIsLoading(device.tag, false)
-                }
-            } catch (e: Exception) {
-                Response.Error(Const.ERROR, null).also {
-                    deviceDao.setIsLoading(device.tag, false)
+                    deviceDao.setIsLoading(device.id!!, false)
                 }
             }
+        } catch (e: IOException) {
+            Response.Error(Const.NO_INTERNET_CONNECTION, null).also {
+                deviceDao.setIsLoading(device.id!!, false)
+            }
+        } catch (e: HttpException) {
+            Response.Error(Const.BAD_REQUEST, null).also {
+                deviceDao.setIsLoading(device.id!!, false)
+            }
+        } catch (e: Exception) {
+            Response.Error(Const.ERROR, null).also {
+                deviceDao.setIsLoading(device.id!!, false)
+            }
         }
+    }
 
     suspend fun checkAllDevicesStateAsync() = coroutineScope {
         deviceDao.getAllDevicesAsync().map { device ->
@@ -62,32 +63,34 @@ class MainRepository @Inject constructor(
 
     private suspend fun checkState(device: Device) = coroutineScope {
         try {
-            deviceDao.setIsLoading(device.tag, true)
+            deviceDao.setIsLoading(device.id!!, true)
             val res = smartHomeService.genericRoute(getRoute(device, Route.STATUS))
             if (res.isSuccessful) {
                 Response.Success(res.body()!!).also {
-                    deviceDao.updateStatus(device.tag, res.body()?.state == 1)
-                    deviceDao.setIsLoading(device.tag, false)
+                    deviceDao.updateStatus(device.id!!, res.body()?.state == 1)
+                    deviceDao.setIsLoading(device.id!!, false)
                 }
             } else {
                 Response.Error(Const.ERROR, null).also {
-                    deviceDao.setIsLoading(device.tag, false)
+                    deviceDao.setIsLoading(device.id!!, false)
                 }
             }
         } catch (e: Exception) {
             Response.Error(Const.ERROR, null).also {
-                deviceDao.setIsLoading(device.tag, false)
+                deviceDao.setIsLoading(device.id!!, false)
             }
         }
     }
 
-    suspend fun insertAll(devices: List<Device>) = coroutineScope {
-        deviceDao.insertDevices(devices)
+    suspend fun updateDevice(id: Int, name: String, address: String) = coroutineScope {
+        deviceDao.updateDevice(id, name, address)
     }
 
-    private fun getRoute(device: Device, route: Route) = when (route) {
-        Route.DEVICE_ON -> "${device.address}/${CommonRoutes.DEVICE_ON}"
-        Route.DEVICE_OFF -> "${device.address}/${CommonRoutes.DEVICE_OFF}"
-        Route.STATUS -> "${device.address}/${CommonRoutes.DEVICE_STATUS}"
+    suspend fun addDevice(name: String, address: String) = coroutineScope {
+        deviceDao.insertDevice(Device(name, address))
+    }
+
+    suspend fun deleteDevice(device: Device) = coroutineScope {
+        deviceDao.deleteDevice(device)
     }
 }

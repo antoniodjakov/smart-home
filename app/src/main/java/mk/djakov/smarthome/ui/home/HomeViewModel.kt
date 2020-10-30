@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import mk.djakov.smarthome.data.model.Device
 import mk.djakov.smarthome.data.model.RelayResponse
 import mk.djakov.smarthome.data.repository.MainRepository
-import mk.djakov.smarthome.util.Data
 import mk.djakov.smarthome.util.Response
 
 class HomeViewModel @ViewModelInject constructor(
@@ -18,28 +17,21 @@ class HomeViewModel @ViewModelInject constructor(
 
     val devices = repository.devices
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val loadingStatus: LiveData<Boolean>
-        get() = _isLoading
-
-    private val _deviceStatus = MutableLiveData<Response<RelayResponse>>()
-    val deviceStatus: LiveData<Response<RelayResponse>>
+    private val _deviceStatus = MutableLiveData<Response<out RelayResponse>>()
+    val deviceStatus: LiveData<Response<out RelayResponse>>
         get() = _deviceStatus
 
-    private val _deviceValue = MutableLiveData<Response<RelayResponse>>()
-    val deviceValue: LiveData<Response<RelayResponse>>
-        get() = _deviceValue
+    private val _device = MutableLiveData<Device?>()
+    val device: LiveData<Device?>
+        get() = _device
 
     init {
-        viewModelScope.launch {
-            repository.insertAll(Data.devices)
-            checkDevicesStatus()
-        }
+        checkDevicesStatus()
     }
 
     fun changeDeviceStatus(device: Device) {
         viewModelScope.launch {
-            repository.updateStatus(device, !device.state)
+            _deviceStatus.postValue(repository.updateStatus(device, !device.state))
         }
     }
 
@@ -49,5 +41,24 @@ class HomeViewModel @ViewModelInject constructor(
 
     fun acknowledgeDeviceStatus() {
 //        _deviceOneStatus.value = Response.None()
+    }
+
+    fun showDeviceDetails(device: Device) {
+        _device.value = device
+    }
+
+    fun addDevice(id: Int? = null, name: String, address: String) =
+        viewModelScope.launch {
+            id?.let {
+                repository.updateDevice(id, name, address)
+            } ?: repository.addDevice(name, address)
+        }
+
+    fun deleteDevice(device: Device) = viewModelScope.launch {
+        repository.deleteDevice(device)
+    }
+
+    fun acknowledgeDevice() {
+        _device.value = null
     }
 }

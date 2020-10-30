@@ -1,10 +1,7 @@
 package mk.djakov.smarthome.db
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import mk.djakov.smarthome.data.model.Device
 
 @Dao
@@ -18,13 +15,18 @@ interface DeviceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDevice(device: Device)
 
-    @Query("UPDATE device SET state = :state WHERE tag = :name")
-    suspend fun updateStatus(name: String, state: Boolean)
+    @Query("UPDATE device SET state = :state WHERE id = :id")
+    suspend fun updateStatus(id: Int, state: Boolean)
 
-    @Query("UPDATE device SET is_loading = :isLoading WHERE tag = :name")
-    suspend fun setIsLoading(name: String, isLoading: Boolean)
+    @Query("UPDATE device SET is_loading = :isLoading WHERE id = :id")
+    suspend fun setIsLoading(id: Int, isLoading: Boolean)
 
     @Query("SELECT * FROM device")
     suspend fun getAllDevicesAsync(): List<Device>
 
+    @Query("UPDATE device SET name = :name, address = :address WHERE id = :id")
+    suspend fun updateDevice(id: Int, name: String, address: String)
+
+    @Delete
+    suspend fun deleteDevice(device: Device)
 }

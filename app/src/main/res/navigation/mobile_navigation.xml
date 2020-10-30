@@ -26,5 +26,5 @@
         android:id="@+id/addDeviceFragment"
         android:name="mk.djakov.smarthome.ui.newdevice.AddDeviceFragment"
         android:label="AddDeviceFragment"
-        tools:layout="@layout/add_new_device_layout"/>
+        tools:layout="@layout/add_device_layout"/>
 </navigation>

@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import mk.djakov.smarthome.R
 import mk.djakov.smarthome.data.model.Device
 import mk.djakov.smarthome.databinding.DeviceItemBinding
 
 class DeviceAdapter(
     val deviceStatusClickListener: (Device) -> Unit,
-    val deviceOptionsClickListener: (Device) -> Unit
+    val deviceOptionsClickListener: (Pair<Device, View>) -> Unit
 ) : ListAdapter<Device, DeviceAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -19,7 +20,10 @@ class DeviceAdapter(
         holder.apply {
             bind(
                 createDeviceStatusClickListener(device),
-                createDeviceOptionsClickListener(device),
+                createDeviceOptionsClickListener(
+                    device,
+                    holder.itemView.findViewById(R.id.device_options)
+                ),
                 device
             )
             itemView.tag = device
@@ -36,8 +40,8 @@ class DeviceAdapter(
         return View.OnClickListener { deviceStatusClickListener(device) }
     }
 
-    private fun createDeviceOptionsClickListener(device: Device): View.OnClickListener {
-        return View.OnClickListener { deviceOptionsClickListener(device) }
+    private fun createDeviceOptionsClickListener(device: Device, view: View): View.OnClickListener {
+        return View.OnClickListener { deviceOptionsClickListener(Pair(device, view)) }
     }
 
     class ViewHolder(private val binding: DeviceItemBinding) :

@@ -84,6 +84,3 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 
-app/src/main/java/mk/djakov/smarthome/util/Credentials.kt
-
-

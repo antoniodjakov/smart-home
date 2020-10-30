@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import mk.djakov.smarthome.R
 
-class AddDeviceFragment: Fragment(R.layout.add_new_device_layout) {
+class AddDeviceFragment: Fragment(R.layout.add_device_layout) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
