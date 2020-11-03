@@ -1,6 +1,10 @@
 # smart-home
 Smart Home Android application built with Kotlin for Sonoff Basic WiFi relay controllers with ESPEasy firmware.
 
+Download on PlayStore: [https://play.google.com/store/apps/details?id=mk.djakov.smarthome]
+
+
+
 Devices: Sonoff Basic [https://www.aliexpress.com/item/4000390205431.html?spm=a2g0s.9042311.0.0.23f14c4dFCBUYP]
 
 Firmware: ESPEasy build no.R120 [http://www.letscontrolit.com/downloads/ESPEasy_R120.zip]
