@@ -4,6 +4,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:gravity="center"
+        android:textColor="?colorPrimary"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_text_input"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -11,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:hint="@string/label"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/label">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/device_name"
@@ -28,12 +39,50 @@
         android:layout_margin="8dp"
         android:hint="@string/ip_address_hint"
         app:layout_constraintTop_toBottomOf="@id/name_text_input"
-        app:prefixText="http://">
+        app:placeholderText="@string/ip_address_prefix">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/device_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/port_text_input"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:hint="@string/port_hint"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@id/gpio_text_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/address_text_input">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/device_port"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/gpio_text_input"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:hint="@string/gpio_hint"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/port_text_input"
+        app:layout_constraintTop_toBottomOf="@id/address_text_input">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/device_gpio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,9 +95,9 @@
         android:text="@string/cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/address_text_input" />
+        app:layout_constraintTop_toBottomOf="@id/gpio_text_input" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/add_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -57,7 +106,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/cancel_button"
-        app:layout_constraintTop_toBottomOf="@id/address_text_input" />
+        app:layout_constraintTop_toBottomOf="@id/gpio_text_input" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

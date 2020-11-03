@@ -14,6 +14,8 @@
     <string name="status_check_error">Error checking status</string>
     <string name="label">Name</string>
     <string name="ip_address_hint">IP Address</string>
+    <string name="port_hint">Port</string>
+    <string name="gpio_hint">GPIO</string>
     <string name="action_add">Add new device</string>
     <string name="add_new_device">Add new device</string>
     <string name="cancel">Cancel</string>
@@ -22,4 +24,8 @@
     <string name="edit">Edit</string>
     <string name="update_device">Update device</string>
     <string name="success">Success</string>
+    <string name="ip_address_prefix">http://</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="bad_request">Check your IP address or GPIO</string>
+
 </resources>

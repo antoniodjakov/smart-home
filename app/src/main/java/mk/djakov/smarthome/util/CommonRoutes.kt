@@ -1,10 +1,12 @@
 package mk.djakov.smarthome.util
 
 object CommonRoutes {
-    const val DEVICE_ON = "control?cmd=GPIO,12,1"
-    const val DEVICE_OFF = "control?cmd=GPIO,12,0"
-    const val DEVICE_STATUS = "control?cmd=status,gpio,12"
 
+    fun deviceOn(gpio: Int) = "control?cmd=GPIO,$gpio,1"
+
+    fun deviceOff(gpio: Int) = "control?cmd=GPIO,$gpio,0"
+
+    fun deviceStatus(gpio: Int) = "control?cmd=status,gpio,$gpio"
 
     enum class Route {
         DEVICE_ON,

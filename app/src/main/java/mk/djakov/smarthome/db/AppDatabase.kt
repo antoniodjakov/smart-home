@@ -6,9 +6,9 @@ import mk.djakov.smarthome.data.model.Device
 
 @Database(
     entities = [Device::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
-abstract class AppDatabase: RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun deviceDao(): DeviceDao
 }

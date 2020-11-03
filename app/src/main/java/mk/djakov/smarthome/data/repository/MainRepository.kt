@@ -1,11 +1,12 @@
 package mk.djakov.smarthome.data.repository
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mk.djakov.smarthome.data.model.Device
 import mk.djakov.smarthome.db.DeviceDao
 import mk.djakov.smarthome.networking.SmartHomeService
-import mk.djakov.smarthome.util.CommonRoutes
 import mk.djakov.smarthome.util.CommonRoutes.Route
 import mk.djakov.smarthome.util.Const
 import mk.djakov.smarthome.util.Helper.getRoute
@@ -82,15 +83,27 @@ class MainRepository @Inject constructor(
         }
     }
 
-    suspend fun updateDevice(id: Int, name: String, address: String) = coroutineScope {
-        deviceDao.updateDevice(id, name, address)
-    }
+    suspend fun updateDevice(id: Int, name: String, address: String, gpio: Int) =
+        coroutineScope {
+            deviceDao.updateDevice(id, name, address, gpio)
+        }
 
-    suspend fun addDevice(name: String, address: String) = coroutineScope {
-        deviceDao.insertDevice(Device(name, address))
+    suspend fun addDevice(name: String, address: String, gpio: Int) = coroutineScope {
+        val rowId = deviceDao.insertDevice(Device(name, address, gpio))
+
+        //Check the new inserted device state
+        withContext(Dispatchers.IO) {
+            deviceDao.getDeviceById(rowId).also {
+                launch { checkState(it) }
+            }
+        }
     }
 
     suspend fun deleteDevice(device: Device) = coroutineScope {
         deviceDao.deleteDevice(device)
+    }
+
+    suspend fun updateDevicePosition(id: Int, position: Int) = coroutineScope {
+        deviceDao.updateDevicePosition(id, position)
     }
 }

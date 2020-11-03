@@ -1,6 +1,7 @@
 package mk.djakov.smarthome.ui.home
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -13,15 +14,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import mk.djakov.smarthome.R
 import mk.djakov.smarthome.data.model.Device
 import mk.djakov.smarthome.databinding.FragmentHomeBinding
-import mk.djakov.smarthome.util.Helper
+import mk.djakov.smarthome.util.Const
+import mk.djakov.smarthome.util.Helper.swapDevices
 import mk.djakov.smarthome.util.Helper.toast
 import mk.djakov.smarthome.util.Response
 
@@ -31,6 +34,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var viewModel: HomeViewModel
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var adapter: DeviceAdapter
     private var materialAlertDialogBuilder: MaterialAlertDialogBuilder? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,7 +47,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
 
-        val adapter = DeviceAdapter({
+        adapter = DeviceAdapter({
             //onStatusClick
             viewModel.changeDeviceStatus(it)
         }, { (device, view) ->
@@ -55,15 +59,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         val itemTouchHelperCallback =
             object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.UP or ItemTouchHelper.DOWN) {
+                var list: ArrayList<Device> = arrayListOf()
                 override fun onMove(
                     recyclerView: RecyclerView,
                     viewHolder: RecyclerView.ViewHolder,
                     target: RecyclerView.ViewHolder
                 ): Boolean {
+                    list = ArrayList(adapter.currentList)
                     val fromPosition = viewHolder.adapterPosition
                     val toPosition = target.adapterPosition
 
-                    adapter.notifyItemMoved(fromPosition, toPosition)
+//                    TODO use this in future, it has a better animation than DB update
+//                    adapter.notifyItemMoved(fromPosition, toPosition)
+
+                    list.swapDevices(fromPosition, toPosition)
                     return true
                 }
 
@@ -76,6 +85,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     ItemTouchHelper.ACTION_STATE_DRAG,
                     ItemTouchHelper.DOWN or ItemTouchHelper.UP or ItemTouchHelper.START or ItemTouchHelper.END
                 )
+
+                override fun onSelectedChanged(
+                    viewHolder: RecyclerView.ViewHolder?,
+                    actionState: Int
+                ) {
+                    super.onSelectedChanged(viewHolder, actionState)
+
+                    // Item dropped
+                    if (actionState == SCROLL_STATE_IDLE) {
+                        viewModel.saveDeviceOrder(list).also {
+                            viewModel.updateDeviceList()
+                        }
+                    }
+                }
             }
 
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
@@ -90,13 +113,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun subscribeObservers(adapter: DeviceAdapter) {
 
-        viewModel.devices.observe(viewLifecycleOwner, { adapter.submitList(it) })
+        viewModel.devices.observe(viewLifecycleOwner, {
+            adapter.submitList(it)
+        })
 
         viewModel.deviceStatus.observe(viewLifecycleOwner, { response ->
             when (response) {
                 is Response.Success -> requireContext().toast(getString(R.string.status_change_success))
+                    .also { viewModel.acknowledgeDeviceStatus() }
 
-                is Response.Error -> requireContext().toast(getString(R.string.status_change_error))
+                is Response.Error -> {
+                    requireContext().toast(
+                        when (response.message) {
+                            Const.NO_INTERNET_CONNECTION -> getString(R.string.no_internet_connection)
+                            Const.BAD_REQUEST -> getString(R.string.bad_request)
+                            else -> getString(R.string.status_change_error)
+                        }.also { viewModel.acknowledgeDeviceStatus() }
+                    )
+                }
 
                 else -> {
                 }
@@ -104,11 +138,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         })
 
         viewModel.device.observe(viewLifecycleOwner, { device ->
-            device?.let {
-                createAddDeviceDialog(it).also {
-                    viewModel.acknowledgeDevice()
-                }
-            }
+            device?.let { createAddDeviceDialog(it) }
         })
     }
 
@@ -116,19 +146,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         materialAlertDialogBuilder?.let {
             val view =
                 LayoutInflater.from(requireContext()).inflate(R.layout.add_device_layout, null)
-            val name = view.findViewById(R.id.device_name) as TextView
-            val address = view.findViewById(R.id.device_address) as TextView
+            val label = view.findViewById(R.id.label) as TextView
+            val name = view.findViewById(R.id.device_name) as TextInputEditText
+            val address = view.findViewById(R.id.device_address) as TextInputEditText
+            val gpio = view.findViewById(R.id.device_gpio) as TextInputEditText
             val addButton = view.findViewById(R.id.add_button) as Button
             val cancelButton = view.findViewById(R.id.cancel_button) as MaterialButton
 
             device?.let {
-                name.text = device.name
-                address.text = device.address
+                label.text = getString(R.string.update_device)
+                name.setText(device.name)
+                address.setText(device.address)
+                gpio.setText(device.gpio.toString())
                 addButton.text = getString(R.string.update_device)
-                if (device.address.startsWith("http://")) {
-                    (view.findViewById(R.id.address_text_input) as TextInputLayout).prefixText = ""
-                }
-            }
+            } ?: let { label.text = getString(R.string.add_new_device) }
 
             val alertDialog = it.setView(view)
                 .setCancelable(false)
@@ -138,21 +169,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 if (isInputValid(name.text.toString(), address.text.toString())) {
                     device?.let {
                         viewModel.addDevice(
-                            device.id,
-                            name.text.toString(),
-                            Helper.formatAddress(address.text.toString())
+                            id = device.id,
+                            name = name.text.toString(),
+                            address = address.text.toString(),
+                            gpio = if (TextUtils.isEmpty(gpio.text)) Const.GPIO
+                            else gpio.text.toString().toInt()
                         )
                     } ?: viewModel.addDevice(
-                        null,
-                        name.text.toString(),
-                        Helper.formatAddress(address.text.toString())
+                        id = null,
+                        name = name.text.toString(),
+                        address = address.text.toString(),
+                        gpio = if (TextUtils.isEmpty(gpio.text)) Const.GPIO
+                        else gpio.text.toString().toInt()
                     )
                     alertDialog.dismiss()
+                    viewModel.acknowledgeDevice()
                 }
             }
 
             cancelButton.setOnClickListener {
                 alertDialog.dismiss()
+                viewModel.acknowledgeDevice()
             }
         }
     }
@@ -181,18 +218,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
         }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
-            R.id.action_add -> {
+            R.id.action_add -> true.also {
                 createAddDeviceDialog()
-                return true
             }
+            else -> false
         }
-        return false
-    }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        viewModel.updateDeviceList()
         _binding = null
-        super.onDestroy()
+        super.onDestroyView()
     }
 }

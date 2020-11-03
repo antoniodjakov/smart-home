@@ -28,11 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:background="@null"
+        android:backgroundTint="?colorPrimary"
         android:elevation="0dp"
-        app:backgroundTint="@android:color/transparent"
+        android:src="@drawable/ic_refresh"
         app:elevation="0dp"
-        app:maxImageSize="56dp"
-        app:srcCompat="@drawable/information" />
+        app:maxImageSize="40dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -8,12 +8,16 @@ object Helper {
 
     fun Context.toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 
-    fun formatAddress(address: String) =
-        if (address.startsWith("http://")) address else "http://${address}"
-
     fun getRoute(device: Device, route: CommonRoutes.Route) = when (route) {
-        CommonRoutes.Route.DEVICE_ON -> "${device.address}/${CommonRoutes.DEVICE_ON}"
-        CommonRoutes.Route.DEVICE_OFF -> "${device.address}/${CommonRoutes.DEVICE_OFF}"
-        CommonRoutes.Route.STATUS -> "${device.address}/${CommonRoutes.DEVICE_STATUS}"
+        CommonRoutes.Route.DEVICE_ON -> "${device.address}/${CommonRoutes.deviceOn(device.gpio)}"
+        CommonRoutes.Route.DEVICE_OFF -> "${device.address}/${CommonRoutes.deviceOff(device.gpio)}"
+        CommonRoutes.Route.STATUS -> "${device.address}/${CommonRoutes.deviceStatus(device.gpio)}"
+    }
+
+    fun ArrayList<Device>.swapDevices(fromPosition: Int, toPosition: Int) {
+        if (fromPosition == toPosition) return
+        val device = this[fromPosition]
+        this[fromPosition] = this[toPosition]
+        this[toPosition] = device
     }
 }
