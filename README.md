@@ -20,6 +20,6 @@ HTTP Commands:
 
     Relay on -> GET  [IP]/control?cmd=GPIO,12,1
 
-    Relay off -> GET  [IP]/control?cmd=GPIO,12,1
+    Relay off -> GET  [IP]/control?cmd=GPIO,12,0
 
     Relay status -> GET  [IP]/control?cmd=status,gpio,12
