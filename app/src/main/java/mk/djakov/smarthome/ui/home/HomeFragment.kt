@@ -7,6 +7,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.Group
@@ -19,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.Chip
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -40,7 +40,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var adapter: DeviceAdapter
-    private var materialAlertDialogBuilder: MaterialAlertDialogBuilder? = null
+    private var alertDialogBuilder: AlertDialog.Builder? = null
     private lateinit var commandAdapter: ArrayAdapter<String>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,7 +51,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         setHasOptionsMenu(true)
 
-        materialAlertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+        alertDialogBuilder = AlertDialog.Builder(requireContext())
 
         adapter = DeviceAdapter({
             //onStatusClick
@@ -163,7 +163,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun createAddDeviceDialog(device: Device? = null) {
-        materialAlertDialogBuilder?.let {
+        alertDialogBuilder?.let {
             val view =
                 LayoutInflater.from(requireContext()).inflate(R.layout.add_device_layout, null)
             val label = view.findViewById(R.id.label) as TextView

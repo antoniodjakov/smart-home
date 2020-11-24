@@ -15,7 +15,6 @@ import mk.djakov.smarthome.db.AppDatabase
 import mk.djakov.smarthome.db.DeviceDao
 import mk.djakov.smarthome.networking.SmartHomeService
 import mk.djakov.smarthome.util.Const
-import mk.djakov.smarthome.util.MIGRATION_5_6
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -31,7 +30,7 @@ object AppModule {
     fun provideSmartHomeDatabase(
         @ApplicationContext context: Context
     ) = Room.databaseBuilder(context, AppDatabase::class.java, "smart_home_db")
-        .addMigrations(MIGRATION_5_6)
+        .fallbackToDestructiveMigration()
         .build()
 
     @Singleton
