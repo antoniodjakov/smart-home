@@ -30,7 +30,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:backgroundTint="?colorPrimary"
         android:elevation="0dp"
-        android:src="@drawable/ic_refresh"
+        android:src="@drawable/ic_round_add"
         app:elevation="0dp"
         app:maxImageSize="40dp" />
 

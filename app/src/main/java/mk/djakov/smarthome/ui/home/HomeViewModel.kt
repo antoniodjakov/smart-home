@@ -23,6 +23,10 @@ class HomeViewModel @ViewModelInject constructor(
     val deviceStatus: LiveData<Response<out RelayResponse>>
         get() = _deviceStatus
 
+    private val _status = MutableLiveData<Response.None<String>>()
+    val status: LiveData<Response.None<String>>
+        get() = _status
+
     private val _device = MutableLiveData<Device?>()
     val device: LiveData<Device?>
         get() = _device
@@ -38,7 +42,7 @@ class HomeViewModel @ViewModelInject constructor(
     }
 
     fun checkDevicesStatus() = viewModelScope.launch {
-        repository.checkAllDevicesStateAsync()
+        _status.postValue(repository.checkAllDevicesStateAsync())
     }
 
     fun acknowledgeDeviceStatus() {
@@ -49,11 +53,19 @@ class HomeViewModel @ViewModelInject constructor(
         _device.value = device
     }
 
-    fun addDevice(id: Int? = null, name: String, address: String, gpio: Int) =
+    fun addDevice(
+        id: Int? = null,
+        name: String,
+        address: String,
+        gpio: Int,
+        command: String,
+        commandStatus: Int,
+        duration: Int
+    ) =
         viewModelScope.launch {
             id?.let {
-                repository.updateDevice(id, name, address, gpio)
-            } ?: repository.addDevice(name, address, gpio)
+                repository.updateDevice(id, name, address, gpio, command, commandStatus, duration)
+            } ?: repository.addDevice(name, address, gpio, command, commandStatus, duration)
         }
 
     fun deleteDevice(device: Device) = viewModelScope.launch {

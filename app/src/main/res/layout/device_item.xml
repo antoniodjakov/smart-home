@@ -41,26 +41,30 @@
 
                 <TextView
                     android:id="@+id/device_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
+                    android:layout_marginEnd="8dp"
                     android:text="@{device.name}"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@id/device_status"
+                    app:layout_constraintEnd_toStartOf="@id/device_status"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/device_status"
                     tools:text="Device name" />
 
                 <ImageView
                     android:id="@+id/device_status"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="8dp"
                     android:onClick="@{onStatusClickListener}"
-                    android:src="@{device.state ? @drawable/switch_on : @drawable/switch_off}"
                     android:visibility="@{device.loading ? View.INVISIBLE : View.VISIBLE}"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/label_options"
                     app:layout_constraintRight_toLeftOf="@id/device_options"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:setCustomImage="@{device}"
                     tools:visibility="visible" />
 
                 <ImageButton
@@ -85,6 +89,17 @@
                     app:layout_constraintStart_toStartOf="@id/device_status"
                     app:layout_constraintTop_toTopOf="@id/device_status"
                     tools:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/label_options"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="4dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/device_options"
+                    app:layout_constraintTop_toBottomOf="@id/device_status"
+                    app:setOptionsText="@{device}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

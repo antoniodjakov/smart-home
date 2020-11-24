@@ -24,8 +24,16 @@ interface DeviceDao {
     @Query("SELECT * FROM device")
     suspend fun getAllDevicesAsync(): List<Device>
 
-    @Query("UPDATE device SET name = :name, address = :address, gpio = :gpio WHERE id = :id")
-    suspend fun updateDevice(id: Int, name: String, address: String, gpio: Int)
+    @Query("UPDATE device SET name = :name, address = :address, gpio = :gpio, command = :command, command_status = :deviceStatus, duration = :duration WHERE id = :id")
+    suspend fun updateDevice(
+        id: Int,
+        name: String,
+        address: String,
+        gpio: Int,
+        command: String,
+        deviceStatus: Int,
+        duration: Int
+    )
 
     @Delete
     suspend fun deleteDevice(device: Device)

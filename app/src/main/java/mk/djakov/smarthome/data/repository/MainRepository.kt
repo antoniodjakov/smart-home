@@ -9,6 +9,7 @@ import mk.djakov.smarthome.db.DeviceDao
 import mk.djakov.smarthome.networking.SmartHomeService
 import mk.djakov.smarthome.util.CommonRoutes.Route
 import mk.djakov.smarthome.util.Const
+import mk.djakov.smarthome.util.Data
 import mk.djakov.smarthome.util.Helper.getRoute
 import mk.djakov.smarthome.util.Response
 import retrofit2.HttpException
@@ -25,8 +26,12 @@ class MainRepository @Inject constructor(
     suspend fun updateStatus(device: Device, newValue: Boolean) = coroutineScope {
         try {
             deviceDao.setIsLoading(device.id!!, true)
-            val url = if (newValue) getRoute(device, Route.DEVICE_ON)
-            else getRoute(device, Route.DEVICE_OFF)
+            val url = if (device.command == Data.commands[0]) {
+                if (newValue) getRoute(device, Route.DEVICE_ON)
+                else getRoute(device, Route.DEVICE_OFF)
+            } else {
+                getRoute(device, Route.PULSE)
+            }
 
             val res = smartHomeService.genericRoute(url)
             if (res.isSuccessful) {
@@ -60,6 +65,7 @@ class MainRepository @Inject constructor(
                 checkState(device)
             }
         }
+        Response.None<String>()
     }
 
     private suspend fun checkState(device: Device) = coroutineScope {
@@ -83,13 +89,35 @@ class MainRepository @Inject constructor(
         }
     }
 
-    suspend fun updateDevice(id: Int, name: String, address: String, gpio: Int) =
-        coroutineScope {
-            deviceDao.updateDevice(id, name, address, gpio)
-        }
+    suspend fun updateDevice(
+        id: Int,
+        name: String,
+        address: String,
+        gpio: Int,
+        command: String,
+        commandStatus: Int,
+        duration: Int
+    ) = coroutineScope {
+            deviceDao.updateDevice(id, name, address, gpio, command, commandStatus, duration)
 
-    suspend fun addDevice(name: String, address: String, gpio: Int) = coroutineScope {
-        val rowId = deviceDao.insertDevice(Device(name, address, gpio))
+        //Check the new inserted device state
+        withContext(Dispatchers.IO) {
+            deviceDao.getDeviceById(id.toLong()).also {
+                launch { checkState(it) }
+            }
+        }
+    }
+
+    suspend fun addDevice(
+        name: String,
+        address: String,
+        gpio: Int,
+        command: String,
+        commandStatus: Int,
+        duration: Int
+    ) = coroutineScope {
+        val rowId =
+            deviceDao.insertDevice(Device(name, address, gpio, command, commandStatus, duration))
 
         //Check the new inserted device state
         withContext(Dispatchers.IO) {

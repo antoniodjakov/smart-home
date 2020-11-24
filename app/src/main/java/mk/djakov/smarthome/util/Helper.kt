@@ -11,6 +11,14 @@ object Helper {
     fun getRoute(device: Device, route: CommonRoutes.Route) = when (route) {
         CommonRoutes.Route.DEVICE_ON -> "${device.address}/${CommonRoutes.deviceOn(device.gpio)}"
         CommonRoutes.Route.DEVICE_OFF -> "${device.address}/${CommonRoutes.deviceOff(device.gpio)}"
+        CommonRoutes.Route.PULSE -> "${device.address}/${
+            CommonRoutes.pulse(
+                device.command,
+                device.gpio,
+                device.commandStatus.toString(),
+                device.duration.toString()
+            )
+        }"
         CommonRoutes.Route.STATUS -> "${device.address}/${CommonRoutes.deviceStatus(device.gpio)}"
     }
 

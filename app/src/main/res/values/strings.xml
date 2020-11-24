@@ -14,9 +14,10 @@
     <string name="status_check_error">Error checking status</string>
     <string name="label">Name</string>
     <string name="ip_address_hint">IP Address</string>
-    <string name="port_hint">Port</string>
-    <string name="gpio_hint">GPIO</string>
-    <string name="action_add">Add new device</string>
+    <string name="command_hint">Command</string>
+    <string name="gpio_hint">GPIO pin</string>
+    <string name="duration_hint">duration</string>
+    <string name="action_refresh">Refresh devices</string>
     <string name="add_new_device">Add new device</string>
     <string name="cancel">Cancel</string>
     <string name="add_device">Add device</string>
@@ -27,5 +28,10 @@
     <string name="ip_address_prefix">http://</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="bad_request">Check your IP address or GPIO</string>
+    <string name="invalid_input">Invalid input</string>
+    <string name="label_for">for</string>
+    <string name="value_off">OFF</string>
+    <string name="value_on">ON</string>
+    <string name="state">State:</string>
 
 </resources>
